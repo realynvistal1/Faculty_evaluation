@@ -341,3 +341,20 @@
 #reportList .report-instructor .mini-avatar{width:48px;height:48px;flex:none;object-fit:cover;border-radius:12px;border:2px solid #eee8fa;background:#f4f0fb}
 #reportList .report-instructor strong{white-space:normal;line-height:1.5}
 #reportList .report-instructor small{display:inline-block;margin-top:.25rem}
+#reportPrintout{display:none}
+@media print{
+ @page{size:landscape;margin:12mm}
+ body.printing-report> :not(#reportPrintout){display:none!important}
+ body.printing-report #reportPrintout{display:block!important;color:#000;background:#fff;font:10pt Arial,sans-serif}
+ #reportPrintout h1{font-size:18pt;margin:0 0 8pt}
+ #reportPrintout p{font-size:9pt;color:#333;margin:0 0 10pt}
+ #reportPrintout table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:9pt}
+ #reportPrintout thead{display:table-header-group}
+ #reportPrintout tr{break-inside:avoid;page-break-inside:avoid}
+ #reportPrintout th,#reportPrintout td{padding:7pt 5pt;border:1px solid #aaa;overflow-wrap:anywhere;text-align:left;vertical-align:top}
+ #reportPrintout th{background:#eee;color:#000;font-size:8pt}
+ #reportPrintout .faculty-cell{display:block;min-width:0}
+ #reportPrintout .faculty-cell strong{white-space:normal}
+ #reportPrintout small{color:#333}
+ #reportPrintout .response-progress{min-width:0}
+}

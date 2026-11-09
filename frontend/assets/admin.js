@@ -125,7 +125,26 @@ async function loadReports(){
  reset.disabled=false;
  reset.onclick=()=>{$('#reportSearch').value='';department.value='';select.value='';resetTerms();reset.disabled=false;};
 }
-$('#printReports').onclick=()=>window.print();
+$('#printReports').onclick=()=>{
+ const list=$('#reportList');
+ if(!list.querySelector('tbody tr')){toast('There are no reports to print. Adjust the filters and try again.');return;}
+ document.getElementById('reportPrintout')?.remove();
+ const printout=document.createElement('article');printout.id='reportPrintout';
+ const filters=['reportPeriod','reportDepartment','reportTermYear','reportTermSemester'].map(id=>{
+  const select=document.getElementById(id);return select?.selectedOptions[0]?.textContent;
+ }).filter(Boolean);
+ const search=$('#reportSearch').value.trim();if(search)filters.push('Search: '+search);
+ printout.innerHTML=`<h1>Faculty Evaluation Report</h1><p>${esc(filters.join(' | '))}</p><p>Generated: ${esc(new Date().toLocaleString())}</p>`;
+ const tableCopy=list.querySelector('table').cloneNode(true);
+ tableCopy.querySelectorAll('tr').forEach(row=>row.lastElementChild?.remove());
+ tableCopy.querySelectorAll('img,button,progress').forEach(element=>element.remove());
+ printout.append(tableCopy);
+ const note=document.createElement('p');note.textContent='Averages use a 1–5 rating scale. Only submitted answers are included.';printout.append(note);
+ document.body.append(printout);document.body.classList.add('printing-report');
+ const cleanup=()=>{document.body.classList.remove('printing-report');printout.remove();};
+ window.addEventListener('afterprint',cleanup,{once:true});
+ try{window.print();}catch(error){cleanup();toast('Unable to open printing: '+error.message,'error');}
+};
 async function showDetail(id){
  const data=await call(`/results/${id}`);if(!data.assignment)throw Error(data.message||'Assignment not found.');
  const a=data.assignment,wrap=document.createElement('div');
